@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  app:
+    container_name: lang-log-api-app
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    volumes:
+      - ./src:/app/src
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      - NODE_ENV=development
+    networks:
+      - lang-log-net
+    env_file:
+      - .env
+
+  db:
+    container_name: lang-log-api-db
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: lang_log
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - lang-log-net
+
+networks:
+  lang-log-net:
+    driver: bridge
+
